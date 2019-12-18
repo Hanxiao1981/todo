@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>TodoAPI 客户端</title>
+
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="Plug-in/layui/css/layui.css" rel="stylesheet" />
+
+    <style type="text/css">
+        /* 定义页码中的鼠标样式 */
+        ul[ class="pagination"] li > span {
+            cursor: pointer;
+        }
+    </style>
+
+    <script src="Scripts/jquery-3.3.1.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <script src="Scripts/vue.min.js"></script>
+    <script src="Plug-in/layui/layui.js"></script>
+
+    <script src="Scripts/todo.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!--选项卡-->
+        <div class="row">
+            <br><br>
+            <div class="col-md-10 col-md-offset-1">
+                <!-- Nav tabs -->
+                <ul class="nav nav-pills nav-justified" role="tablist">
+                    <li role="presentation" class="active">
+                        <a id="addPattern" href="#tabAdd" aria-controls="tabAdd" role="tab" data-toggle="tab">添加</a>
+                    </li>
+                    <li role="presentation">
+                        <a id="searchPattern" href="#tabSearch" aria-controls="tabSearch" role="tab" data-toggle="tab">搜索</a>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="tabAdd">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <br>
+                                <div class="col-md-9 col-md-offset-1">
+                                    <input id="txtAdd" type="text" class="form-control" placeholder="添加任务...">
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="center-block">
+                                        <button id="btnAdd" type="button" class="btn btn-primary">添加</button>
+                                    </div>
+                                </div>
+                            </div><br>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="tabSearch">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <br>
+                                <div class="col-md-9 col-md-offset-1">
+                                    <input id="txtSearch" type="text" class="form-control" placeholder="搜索任务...">
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="center-block">
+                                        <button id="btnSearch" type="button" class="btn btn-primary">搜索</button>
+                                    </div>
+                                </div>
+                            </div><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+        </div>
+
+        <!--列表-->
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1" id="todoListVM">
+                <table class="table table-bordered table-hover" v-if="todoList && todoList.length > 0">
+                    <thead class="bg-info">
+                        <tr>
+                            <th>ID</th>
+                            <th>任务名称</th>
+                            <th>已完成</th>
+                            <th>创建日期</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="todo in todoList" v-bind:key="todo.id">
+                            <td>{{todo.ID}}</td>
+                            <td>{{todo.Name}}</td>
+                            <td><img src="Imgs/ok.png" v-if="todo.Completed"></td>
+                            <td>{{todo.CreateTime}}</td>
+                            <td>
+                                <button type="button" class="btn btn-info" v-on:click="editTodo(todo)">修改</button>
+                                <button type="button" class="btn btn-info" v-on:click="delTodo(todo)">删除</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="panel panel-default" v-else>
+                    <div class="panel-body">没有任务数据!!!</div>
+                </div>
+            </div>
+        </div>
+
+        <!--分页-->
+        <div class="row" id="pageNavVM" v-if="pageCount > 1">
+            <div class="col-md-8 col-md-offset-1">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination" v-html="generatePageList()"></ul>
+                </nav>
+            </div>
+            <div class="col-md-2">
+                <br>
+                <p class="text-info"> 第 {{pageNumber}} 页, 共 {{pageCount}} 页</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

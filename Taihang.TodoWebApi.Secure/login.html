@@ -1,0 +1,184 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>登录</title>
+
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="Plug-in/layui/css/layui.css" rel="stylesheet" />
+
+    <script src="Scripts/jquery-3.3.1.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <script src="Scripts/vue.min.js"></script>
+    <script src="Plug-in/layui/layui.js"></script>
+
+    <script>       
+        var loginModel = {
+            grant_type: 'password',
+            username: 'xiao4407@163.com',
+            password: 'Admin#123'
+        };
+
+        var registerModel = {
+            Email: '',
+            Password: '',
+            ConfirmPassword: ''
+        };
+
+        var layer = null; // 弹窗 layer
+
+        $(function () {
+            // layui的弹出层
+            layui.use('layer', function () {
+                layer = layui.layer;
+            }); 
+
+            var loginVM = new Vue({
+                el: "#loginForm",
+                data: loginModel
+            });
+
+            var registerVM = new Vue({
+                el: "#registerForm",
+                data: registerModel
+            });
+        });
+
+        function login() {
+            var index = layer.load(2); // 显示等待界面，增强用户体验
+
+            $.ajax({
+                type: 'POST',
+                url: '/Token',
+                data: loginModel,
+                success: function (data) {
+                    layer.close(index); // 关闭等待界面
+
+                    sessionStorage.setItem('tokenKey', data.access_token);
+                    location.href = "todo.html";
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    layer.close(index); // 关闭等待界面
+
+                    alert("登录过程中发生错误");
+                }
+            });
+        }
+
+        // xiao4407@163.com:Admin#123
+        function register() {
+            if (registerModel.Password != registerModel.ConfirmPassword) {
+                layer.msg('密码不一致');
+                return;
+            }
+
+            var index = layer.load(2); // 显示等待界面，增强用户体验
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/Account/Register',
+                data: JSON.stringify(registerModel),
+                contentType: 'application/json; charset=utf-8', // 本句通常和JSON.stringify()配对使用
+                success: function (data) {
+                    layer.close(index); // 关闭等待界面
+
+                    registerModel.Email = "";
+                    registerModel.Password = "";
+                    registerModel.ConfirmPassword = "";
+
+                    alert("注册成功");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    layer.close(index); // 关闭等待界面
+
+                    alert("注册过程中发生错误");
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <br><br>
+            <div class="col-md-6 col-md-offset-3">
+                <!-- Nav tabs -->
+                <ul class="nav nav-pills nav-justified" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#tabLogin" aria-controls="tabLogin" role="tab" data-toggle="tab">登录</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#tabRegister" aria-controls="tabRegister" role="tab" data-toggle="tab">注册</a>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="tabLogin">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <br />
+                                
+                                <form class="form-horizontal" id="loginForm">
+                                    <div class="col-sm-offset-3 col-sm-9"><p>如果你还没有账号，请先注册</p></div>
+                                    <div class="form-group">
+                                        <label for="loginUserName" class="col-sm-3 control-label">用户名</label>
+                                        <div class="col-sm-9">
+                                            <input type="email" class="form-control" id="loginUserName" placeholder="Email" v-model="username">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="loginPassword" class="col-sm-3 control-label">密码</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" class="form-control" id="loginPassword" placeholder="Password" v-model="password">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-3 col-sm-9">
+                                            <button type="button" class="btn btn-primary" id="btnLogin" v-on:click="login">登录</button>
+                                        </div>
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="tabRegister">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <br />
+                                <form class="form-horizontal" id="registerForm">
+                                    <div class="form-group">
+                                        <label for="registerEmail" class="col-sm-3 control-label">邮箱</label>
+                                        <div class="col-sm-9">
+                                            <input type="email" class="form-control" id="registerEmail" placeholder="Email" v-model="Email">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="registerPassword" class="col-sm-3 control-label">密码</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" class="form-control" id="registerPassword" placeholder="Password" v-model="Password">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="confirmPassword" class="col-sm-3 control-label">确认密码</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" v-model="ConfirmPassword">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-3 col-sm-9">
+                                            <button type="button" class="btn btn-primary" id="btnRegister" v-on:click="register">注册</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+        </div>
+    </div>
+</body>
+</html>
