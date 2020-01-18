@@ -11,3 +11,5 @@
      (1) 本程序是 Basic 的基础上提供了登录/注册功能，并对 WebAPI 进行了安全保护
 	 (2) 要访问WebAPI，必须先进行登录
 	 (3) 本程序使用 ASP.NET 模板进行开发
+
+3 Basic版演示地址：http://todo.taihang-studio.club/
